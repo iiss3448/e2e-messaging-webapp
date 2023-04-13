@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="header" class="pure-menu pure-menu-horizontal">
+        <a href="/" id="login" class="pure-menu-heading pure-menu-link">Login</a>
+        <a href="/signup" id="signup" class="pure-menu-heading pure-menu-link">Sign Up</a>
+    </div>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+    <ul>{{ message }}</ul>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<div id="content">
+    <small class="note">Note: Intentionally unstyled. Security first, usability second :)</small>
+    <form class="pure-form pure-form-stacked login" method="POST">
+        <h2>Log in</h2>
+        <label for="uname">Enter username</label><input type="text" id="uname" name="uname" placeholder="Username" required>
+        <label for="pwd">Enter password</label><input type="password" id="pwd" name="pwd" placeholder="Password" required>
+        <input class="pure-button pure-button-primary" type="submit">
+    </form>
+</div>
+</body>
+</html>

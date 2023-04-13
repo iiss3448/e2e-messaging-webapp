@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up</title>
+</head>
+
+<body>
+    <div id="header" class="pure-menu pure-menu-horizontal">
+        <a href="/" id="login" class="pure-menu-heading pure-menu-link">Login</a>
+        <a href="/signup" id="signup" class="pure-menu-heading pure-menu-link">Sign Up</a>
+    </div>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+    <ul>{{ message }}</ul>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<form class="pure-form pure-form-stacked signup" method="POST">
+    <h2 align="center">Sign Up</h2>
+    <div align="center">
+
+    <ul><label for="uname">Enter username</label><input type="text" id="uname" name="uname" placeholder="Username" required></ul>
+    <ul><label for="pwd">Enter password</label><input type="password" id="pwd" name="pwd" placeholder="Password" required></ul>
+    <ul><label for="cpwd">Confirm password</label><input type="password" id="cpwd" name="cpwd" placeholder="Confirm Password" required></ul>
+    <ul><input class="pure-button pure-button-primary" type="submit"></ul>
+    </div>
+</form>
+</body>
+</html>
