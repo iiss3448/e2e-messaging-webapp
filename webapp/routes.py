@@ -4,6 +4,8 @@ from .database import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 import random
+import os
+from base64 import b64encode
 
 routes = Blueprint('routes', __name__)
 
@@ -14,7 +16,7 @@ def login():
         pwd = request.form.get("pwd")
         user = User.query.filter_by(username=username).first()
         if user:
-            if check_password_hash(user.password, pwd):
+            if check_password_hash(user.password, pwd + user.salt):
                 flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
                 return redirect(url_for("routes.home"))
@@ -54,7 +56,9 @@ def signup():
         elif password != confirm_password:
             flash("Passwords do not match.", category="error")
         else:
-            new_user = User(username=username, password=generate_password_hash(password, method="sha256"))
+            salt = os.urandom(16)
+            salt = b64encode(salt).decode()
+            new_user = User(username=username, password=generate_password_hash(password + salt, method="sha256"), salt=salt)
             db.session.add(new_user)
             db.session.commit()
             flash("Account created successfully.", category="success")

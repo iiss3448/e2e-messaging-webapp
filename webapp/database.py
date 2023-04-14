@@ -7,3 +7,4 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     session_id = db.Column(db.Integer)
+    salt = db.Column(db.String(16))
