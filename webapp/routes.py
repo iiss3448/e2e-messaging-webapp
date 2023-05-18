@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from io import BytesIO
 from flask import *
 from .database import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,10 +7,15 @@ from flask_login import login_user, login_required, logout_user, current_user
 import random
 import os
 from base64 import b64encode
+from sqlalchemy import desc
 
 routes = Blueprint('routes', __name__)
 
-@routes.route('/', methods=['GET', 'POST'])
+@routes.route('/', methods=['GET'])
+def home():
+    return render_template('home.html')
+
+@routes.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
         username = request.form.get("uname")
@@ -19,7 +25,7 @@ def login():
             if check_password_hash(user.password, pwd + user.salt):
                 flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for("routes.home"))
+                return redirect(url_for("routes.chat_page"))
             else:
                 flash("Incorrect password!", category="error")
         else:
@@ -31,12 +37,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("routes.login"))
-
-@routes.route('/home')
-@login_required
-def home():
-    keyid = random.Random().randint(1, 999)
-    return render_template('home.html', user=current_user, keyid=keyid)
 
 @routes.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -64,3 +64,28 @@ def signup():
             flash("Account created successfully.", category="success")
             return redirect(url_for("routes.login"))
     return render_template('signup.html', user=current_user)
+
+@routes.route('/chat-page')
+@login_required
+def chat_page():
+    keyid = random.Random().randint(1, 999)
+    return render_template('chat_page.html', user=current_user, keyid=keyid)
+
+@routes.route('/knowledge-hub', methods=['GET', 'POST'])
+@login_required
+def knowledge_hub():
+    all_resources = db.session.query(Resource).order_by(desc(Resource.timestamp)).all()
+    if request.method == 'POST' and not resources is None:
+        file = request.files['file']
+        resource = Resource(filename=file.filename, data=file.read())
+        db.session.add(resource)
+        db.commit()
+        flash("Resource uploaded successfully.", category="success")
+    if resources is None:
+        resources = []
+    return render_template('knowledge_hub.html', resources=all_resources, user=current_user)
+
+@routes.route('/download/<upload_id>')
+def download(upload_id):
+    upload = Resource.query.filter_by(id=upload_id).first()
+    return send_file(BytesIO(upload.data), attachment_filename=upload.filename, as_attachment=True)

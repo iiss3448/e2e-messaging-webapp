@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
+            integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
+            crossorigin="anonymous"></script>
+    <title>Knowledge Hub</title>
+</head>
+
+<body>
+    <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/chat_page" class="nav-link">Chat Room</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/knowledge_hub" class="nav-link">Knowledge Hub</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li>
+                            <a href="/signup" class="dropdown-item">Sign Up</a>
+                        </li>
+                        <li>
+                            <a href="/logout" class="dropdown-item">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for message in messages %}
+        <ul>{{ message }}</ul>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <div class="heading">
+        <h2 class="text-center" style="margin-top: 30px;"><strong>Share Learning Materials Here!</strong></h2>
+    </div>
+    <div class="shared_resources" style="margin: auto; width: 80%; overflow: hidden; padding: 15px;">
+        <div class="container-xl" style="height: 500px; border: 3px solid black; margin: auto;">
+            {{% if len(resources) == 0 %}}
+            <p>There are no resources that have been shared yet...</p>
+            {{% else %}}
+            {{% for resource in resources %}}
+            <div class="card text-center" id="resource-card">
+                <div class="card-header">
+                    {{% resource.username %}}
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">{{% resource.title %}}</h4>
+                    <p class="card-text">{{% resource.filename %}}</p>
+                    <a href="/download/{{resource.id}}" class="btn btn-success">Download</a>
+                </div>
+                <div class="card-footer text-muted">
+                    {{% resource.timestamp %}}
+                </div>
+            </div>
+            {{% endfor %}}
+            {{% endif %}}
+        </div>
+    </div>
+    <div class="add_resource" style="display: flex; justify-content: center; align-items: center; margin-top: 50px; margin-bottom: 20px; position: relative;">
+        <form method="POST" enctype="multipart/form-data" style="display: grid;">
+            <div class="title" style="padding-bottom: 10px; padding-left: 35px;">
+                <label for="title-box">Title:</label>
+                <input type="text" placeholder="Enter title here..." id="title-box">
+            </div>
+            <div class="upload">
+                <input type="file" name="file">
+                <button type="button" class="btn btn-outline-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

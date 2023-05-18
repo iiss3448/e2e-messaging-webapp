@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sign Up</title>
-</head>
+{% extends home.html %}
+{% block title %}Sign Up{% endblock %}
 
 <body>
-    <div id="header" class="pure-menu pure-menu-horizontal">
-        <a href="/" id="login" class="pure-menu-heading pure-menu-link">Login</a>
-        <a href="/signup" id="signup" class="pure-menu-heading pure-menu-link">Sign Up</a>
-    </div>
-
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 <ul class=flashes>
