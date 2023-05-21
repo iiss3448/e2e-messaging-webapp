@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 2%;">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -29,10 +29,10 @@
                     <a href="/" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/chat_page" class="nav-link">Chat Room</a>
+                    <a href="/chat-page" class="nav-link">Chat Room</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/knowledge_hub" class="nav-link">Knowledge Hub</a>
+                    <a href="/knowledge-hub" class="nav-link">Knowledge Hub</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -49,9 +49,11 @@
                 </li>
             </ul>
         </div>
+        <div class="navbar-text" style="padding-right: 3%;">{{ user.username + "\'s" }} Portal</div>
     </nav>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
+    <br>
     <ul class=flashes>
         {% for message in messages %}
         <ul>{{ message }}</ul>
@@ -62,38 +64,42 @@
     <div class="heading">
         <h2 class="text-center" style="margin-top: 30px;"><strong>Share Learning Materials Here!</strong></h2>
     </div>
-    <div class="shared_resources" style="margin: auto; width: 80%; overflow: hidden; padding: 15px;">
-        <div class="container-xl" style="height: 500px; border: 3px solid black; margin: auto;">
-            {{% if len(resources) == 0 %}}
+    <div class="shared_resources" style="margin: auto; width: 80%; padding: 15px;">
+        <div class="container-xl overflow-auto" style="height: 500px; border: 3px solid black; margin: auto;">
+            {% if resources|length == 0 %}
             <p>There are no resources that have been shared yet...</p>
-            {{% else %}}
-            {{% for resource in resources %}}
+            {% else %}
+            <br>
+            {% for resource in resources %}
             <div class="card text-center" id="resource-card">
                 <div class="card-header">
-                    {{% resource.username %}}
+                    {{ resource.op }}
                 </div>
                 <div class="card-body">
-                    <h4 class="card-title">{{% resource.title %}}</h4>
-                    <p class="card-text">{{% resource.filename %}}</p>
+                    <h4 class="card-title">{{ resource.title }}</h4>
+                    <p class="card-text">{{ resource.filename }}</p>
                     <a href="/download/{{resource.id}}" class="btn btn-success">Download</a>
                 </div>
                 <div class="card-footer text-muted">
-                    {{% resource.timestamp %}}
+                    {{ resource.timestamp }}
                 </div>
             </div>
-            {{% endfor %}}
-            {{% endif %}}
+            <br>
+            {% endfor %}
+            {% endif %}
         </div>
     </div>
-    <div class="add_resource" style="display: flex; justify-content: center; align-items: center; margin-top: 50px; margin-bottom: 20px; position: relative;">
-        <form method="POST" enctype="multipart/form-data" style="display: grid;">
-            <div class="title" style="padding-bottom: 10px; padding-left: 35px;">
+    <div class="add_resource" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px; position: relative;">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group" style="padding-bottom: 10px;">
                 <label for="title-box">Title:</label>
-                <input type="text" placeholder="Enter title here..." id="title-box">
+                <input class="form-control" type="text" placeholder="Enter title here..." id="title-box" name="title-box">
             </div>
-            <div class="upload">
-                <input type="file" name="file">
-                <button type="button" class="btn btn-outline-primary">Upload</button>
+            <div class="form-group" style="padding-bottom: 10px;">
+                <input class="form-control" type="file" name="file">
+            </div>
+            <div align="center">
+                <button type="submit" class="btn btn-outline-primary">Upload</button>
             </div>
         </form>
     </div>

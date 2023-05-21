@@ -1,26 +1,87 @@
-{% extends home.html %}
-{% block title %}Sign Up{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
+        integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
+        crossorigin="anonymous"></script>
+    <title>Sign Up</title>
+</head>
 
 <body>
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul class=flashes>
-    {% for message in messages %}
-    <ul>{{ message }}</ul>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
+    <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 2%;">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/chat-page" class="nav-link">Chat Room</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/knowledge-hub" class="nav-link">Knowledge Hub</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li>
+                            <a href="/signup" class="dropdown-item">Sign Up</a>
+                        </li>
+                        <li>
+                            <a href="/login" class="dropdown-item">Login</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-<form class="pure-form pure-form-stacked signup" method="POST">
-    <h2 align="center">Sign Up</h2>
-    <div align="center">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <br>
+    <ul class=flashes>
+        {% for message in messages %}
+        <ul>{{ message }}</ul>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
 
-    <ul><label for="uname">Enter username</label><input type="text" id="uname" name="uname" placeholder="Username" required></ul>
-    <ul><label for="pwd">Enter password</label><input type="password" id="pwd" name="pwd" placeholder="Password" required></ul>
-    <ul><label for="cpwd">Confirm password</label><input type="password" id="cpwd" name="cpwd" placeholder="Confirm Password" required></ul>
-    <ul><input class="pure-button pure-button-primary" type="submit"></ul>
-    </div>
-</form>
+    <form method="POST">
+        <br>
+        <h2 align="center">Sign Up</h2>
+        <div class="form-group" style="width: 97%; padding-left: 2%;">
+            <label for="uname">Enter username</label><input type="text" class="form-control" id="uname" name="uname" placeholder="Username" required>
+        </div>
+        <br>
+        <div class="form-group" style="width: 97%; padding-left: 2%;">
+            <label for="pwd">Enter password</label><input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password" required>
+        </div>
+        <br>
+        <div class="form-group" style="width: 97%; padding-left: 2%;">
+            <label for="cpwd">Confirm password</label><input type="password" class="form-control" id="cpwd" name="cpwd" placeholder="Confirm Password" required>
+        </div>
+        <br>
+        <div align="center">
+            <button class="btn btn-primary" type="submit">Sign Up!</button>
+        </div>
+    </form>
 </body>
 </html>

@@ -18,23 +18,71 @@
     <title>Login</title>
 </head>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul class=flashes>
-    {% for message in messages %}
-    <ul>{{ message }}</ul>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
+<body>
+    <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 2%;">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/chat-page" class="nav-link">Chat Room</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/knowledge-hub" class="nav-link">Knowledge Hub</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li>
+                            <a href="/signup" class="dropdown-item">Sign Up</a>
+                        </li>
+                        <li>
+                            <a href="/login" class="dropdown-item">Login</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <br>
+    <ul class=flashes>
+        {% for message in messages %}
+        <ul>{{ message }}</ul>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
 
-<div id="content">
-    <form class="pure-form pure-form-stacked login" method="POST">
-        <h2>Log in</h2>
-        <label for="uname">Enter username</label><input type="text" id="uname" name="uname" placeholder="Username" required>
-        <label for="pwd">Enter password</label><input type="password" id="pwd" name="pwd" placeholder="Password" required>
-        <input class="pure-button pure-button-primary" type="submit">
+    <form method="POST">
+        <br>
+        <h2 align="center">Log in</h2>
+        <div class="form-group" style="width: 97%; padding-left: 2%;">
+            <label for="uname">Enter username</label><input type="text" class="form-control" id="uname" name="uname"
+            placeholder="Username" required>
+        </div>
+        <br>
+        <div class="form-group" style="width: 97%; padding-left: 2%;">
+            <label for="pwd">Enter password</label><input type="password" class="form-control" id="pwd" name="pwd"
+                placeholder="Password" required>
+        </div>
+        <br>
+        <div align="center">
+            <button class="btn btn-primary" type="submit">Login</button>
+        </div>
     </form>
-</div>
+    <br>
+    <div align="center">
+        <a href="/signup">Don't have an account? Sign up!</a>
+    </div>
 </body>
 </html>

@@ -8,12 +8,14 @@ import random
 import os
 from base64 import b64encode
 from sqlalchemy import desc
+from datetime import datetime
 
 routes = Blueprint('routes', __name__)
+keyid = None
 
 @routes.route('/', methods=['GET'])
 def home():
-    return render_template('home.html')
+    return render_template('home.html', user=current_user)
 
 @routes.route('/login', methods=['GET', 'POST'])
 def login():
@@ -25,7 +27,8 @@ def login():
             if check_password_hash(user.password, pwd + user.salt):
                 flash("Logged in successfully!", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for("routes.chat_page"))
+                keyid = random.Random().randint(1, 999)
+                return redirect(url_for("routes.home"))
             else:
                 flash("Incorrect password!", category="error")
         else:
@@ -36,7 +39,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("routes.login"))
+    return redirect(url_for("routes.home"))
 
 @routes.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -61,31 +64,29 @@ def signup():
             new_user = User(username=username, password=generate_password_hash(password + salt, method="sha256"), salt=salt)
             db.session.add(new_user)
             db.session.commit()
-            flash("Account created successfully.", category="success")
+            flash("Account created successfully. Log in to continue!", category="success")
             return redirect(url_for("routes.login"))
     return render_template('signup.html', user=current_user)
 
 @routes.route('/chat-page')
 @login_required
 def chat_page():
-    keyid = random.Random().randint(1, 999)
     return render_template('chat_page.html', user=current_user, keyid=keyid)
 
 @routes.route('/knowledge-hub', methods=['GET', 'POST'])
 @login_required
 def knowledge_hub():
-    all_resources = db.session.query(Resource).order_by(desc(Resource.timestamp)).all()
-    if request.method == 'POST' and not resources is None:
+    if request.method == 'POST':
+        now = datetime.now()
         file = request.files['file']
-        resource = Resource(filename=file.filename, data=file.read())
+        resource = Resource(filename=file.filename, data=file.read(), timestamp=now, title=request.form.get("title-box"), op=current_user.username)
         db.session.add(resource)
-        db.commit()
+        db.session.commit()
         flash("Resource uploaded successfully.", category="success")
-    if resources is None:
-        resources = []
+    all_resources = db.session.query(Resource).order_by(desc(Resource.timestamp)).all()
     return render_template('knowledge_hub.html', resources=all_resources, user=current_user)
 
 @routes.route('/download/<upload_id>')
 def download(upload_id):
     upload = Resource.query.filter_by(id=upload_id).first()
-    return send_file(BytesIO(upload.data), attachment_filename=upload.filename, as_attachment=True)
+    return send_file(BytesIO(upload.data), download_name= upload.filename, as_attachment=True)

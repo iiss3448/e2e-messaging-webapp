@@ -15,63 +15,99 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
         integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
         crossorigin="anonymous"></script>
-    <title>{{ user.username + "\'s" }} Home</title>
+    <title>SoCS Chat Room</title>
 </head>
 
 <body>
-<h3>Logged in as: {{user.username}}</h3>
+    <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 2%;">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/chat-page" class="nav-link">Chat Room</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/knowledge-hub" class="nav-link">Knowledge Hub</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li>
+                            <a href="/signup" class="dropdown-item">Sign Up</a>
+                        </li>
+                        <li>
+                            <a href="/logout" class="dropdown-item">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="navbar-text" style="padding-right: 3%;">{{ user.username + "\'s" }} Portal</div>
+    </nav>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul class=flashes>
-    {% for message in messages %}
-    <ul>{{ message }}</ul>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %} 
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for message in messages %}
+        <ul>{{ message }}</ul>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %} 
+    <br><h3 align="center"><strong>Talk with your peers!</strong></h3>
+    <h6 align="center">WARNING: If you leave this page, your chat history resets!</h6><br>
+    <script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <div align=center>
+        <textarea id="chatbox" cols="80" rows="20" readonly></textarea><br><br>
+        <input class="form-control" id="text" style="width: 50%;" placeholder="Enter your message here"><br><br>
+        <script type="text/javascript" charset="utf-8">
 
-<script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
-<textarea id="chatbox" cols="80" rows="20" readonly></textarea><br><br>
-<input id="text" size="80" placeholder="Enter your message here"><br><br>
-<script type="text/javascript" charset="utf-8">
+            const myPassword = "{{keyid}}";
+            const encryption = true;
 
-    const myPassword = "{{keyid}}";
-    const encryption = true;
-
-    var socket;
-    $(document).ready(function () {
-        socket = io.connect('/home');
-        socket.on('message_received', function (data) {
-            // alert("DATA PAYLOAD: " + data);
-            text = data;
-            if (encryption) {
-                var decrypted = CryptoJS.AES.decrypt(text, myPassword);
-                text = decrypted.toString(CryptoJS.enc.Utf8);
-                // alert('decrypted:' + text);
-            }
-            $('#chatbox').val($('#chatbox').val() + text + '\n');
-            $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
-        });
-        $('#text').keypress(function (e) {
-            var code = e.keyCode || e.which;
-            //alert(e.keyCode);
-            if (code == 13) {
-                msg = $('#text').val();
-                text = "{{user.username}}: " + msg;
-                // alert("TEXT: " + text);
-                if (encryption) {
-                    text = CryptoJS.AES.encrypt(text, myPassword).toString();
-                    // alert('encrypted:' + text);
-                }
-
-                $('#text').val('');
-                socket.emit('message_sent', text);
-            }
-        });
-    });
-</script>
-
+            var socket;
+            $(document).ready(function () {
+                socket = io.connect('/home');
+                socket.on('message_received', function (data) {
+                    // alert("DATA PAYLOAD: " + data);
+                    text = data;
+                    if (encryption) {
+                        var decrypted = CryptoJS.AES.decrypt(text, myPassword);
+                        // alert('decrypted:' + decrypted);
+                        text = decrypted.toString(CryptoJS.enc.Utf8);
+                        // alert('decrypted:' + text);
+                    }
+                    $('#chatbox').val($('#chatbox').val() + text + '\n');
+                    $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
+                });
+                $('#text').keypress(function (e) {
+                    var code = e.keyCode || e.which;
+                    //alert(e.keyCode);
+                    if (code == 13) {
+                        msg = $('#text').val();
+                        text = "{{user.username}}: " + msg;
+                        // alert("TEXT: " + text);
+                        if (encryption) {
+                            text = CryptoJS.AES.encrypt(text, myPassword).toString();
+                            // alert('encrypted:' + text);
+                        }
+                        
+                        $('#text').val('');
+                        socket.emit('message_sent', text);
+                    }
+                });
+            });
+        </script>
+    </div>
 </body>
 </html>
