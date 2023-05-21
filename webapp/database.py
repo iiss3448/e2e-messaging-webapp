@@ -8,6 +8,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255))
     session_id = db.Column(db.Integer)
     salt = db.Column(db.String(16))
+    is_admin = db.Column(db.Boolean, default=False)
 
 class Resource(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -15,18 +15,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
         integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
         crossorigin="anonymous"></script>
-    <title>SoCS Chat Room</title>
+    <title>Admin Tools</title>
 </head>
 
 <body>
     <nav id="header" class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 2%;">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-                <li class="nav-item">
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item">
                     <a href="/" class="nav-link">Home</a>
                 </li>
                 {% if user.is_admin %}
@@ -42,8 +42,8 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Account
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Account
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li>
@@ -58,61 +58,78 @@
         </div>
         <div class="navbar-text" style="padding-right: 3%;">{{ user.username + "\'s" }} Portal</div>
     </nav>
-
+    <br>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
+    <br>
     <ul class=flashes>
         {% for message in messages %}
         <ul>{{ message }}</ul>
         {% endfor %}
     </ul>
     {% endif %}
-    {% endwith %} 
-    <br><h3 align="center"><strong>Talk with your peers!</strong></h3>
-    <h6 align="center">WARNING: If you leave this page, your chat history resets!</h6><br>
-    <script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
-    <div align=center>
-        <textarea id="chatbox" cols="80" rows="20" readonly></textarea><br><br>
-        <input class="form-control" id="text" style="width: 50%;" placeholder="Enter your message here"><br><br>
-        <script type="text/javascript" charset="utf-8">
-
-            const myPassword = "{{keyid}}";
-            const encryption = true;
-
-            var socket;
-            $(document).ready(function () {
-                socket = io.connect('/chat-page');
-                socket.on('message_received', function (data) {
-                    // alert("DATA PAYLOAD: " + data);
-                    text = data;
-                    if (encryption) {
-                        var decrypted = CryptoJS.AES.decrypt(text, myPassword);
-                        // alert('decrypted:' + decrypted);
-                        text = decrypted.toString(CryptoJS.enc.Utf8);
-                        // alert('decrypted:' + text);
-                    }
-                    $('#chatbox').val($('#chatbox').val() + text + '\n');
-                    $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
-                });
-                $('#text').keypress(function (e) {
-                    var code = e.keyCode || e.which;
-                    //alert(e.keyCode);
-                    if (code == 13) {
-                        msg = $('#text').val();
-                        text = "{{user.username}}: " + msg;
-                        // alert("TEXT: " + text);
-                        if (encryption) {
-                            text = CryptoJS.AES.encrypt(text, myPassword).toString();
-                            // alert('encrypted:' + text);
-                        }
-                        
-                        $('#text').val('');
-                        socket.emit('message_sent', text);
-                    }
-                });
-            });
-        </script>
+    {% endwith %}
+    {% if user.is_admin is false %}
+    <h1 align="center"><strong>You are not authorised to access administrative tools.</strong></h1>
+    <h1 align="center"><strong>Leave or you will be reported.</strong></h1>
+    {% else %}
+    <h1 align="center"><strong>Welcome to admin tools.</strong></h1>
+    <br>
+    <div align="center">
+        <h3>Table of Users</h3>
+        <table id="users_table" class="table table-striped" style="width: 80%;">
+            <thead>
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Admin Access</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <form method="POST">
+                        <td id="uid" name="uid">{{u.id}}</td>
+                        <td>{{u.username}}</td>
+                        <td>{{u.is_admin}}</td>
+                        <td><button class="btn btn-danger" type="submit">Delete</button></td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+    <br>
+    <div align="center">
+        <h3>Table of Shared Resources</h3>
+        <table id="resources_table" class="table table-striped" style="width: 80%;">
+            <thead>
+                <tr>
+                    <th scope="col">Resource ID</th>
+                    <th scope="col">Filename</th>
+                    <th scope="col">Uploaded By</th>
+                    <th scope="col">Resource Title</th>
+                    <th scope="col">Uploaded At</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in resources %}
+                <tr>
+                    <form method="POST">
+                        <td id="rid" name="rid">{{r.id}}</td>
+                        <td>{{r.filename}}</td>
+                        <td>{{r.op}}</td>
+                        <td>{{r.title}}</td>
+                        <td>{{r.timestamp}}</td>
+                        <td><button class="btn btn-danger" type="submit">Delete</button></td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
 </body>
 </html>

@@ -5,7 +5,7 @@ from flask_socketio import SocketIO, emit
 app = initialise()
 socket = SocketIO(app)
 
-@socket.on('message_sent', namespace='/home')
+@socket.on('message_sent', namespace='/chat-page')
 def text(payload):
     emit('message_received', payload, broadcast=True)
 

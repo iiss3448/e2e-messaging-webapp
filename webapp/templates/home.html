@@ -29,6 +29,11 @@
                 <li class="nav-item">
                     <a href="/" class="nav-link">Home</a>
                 </li>
+                {% if user.is_admin and user.is_authenticated %}
+                <li class="nav-item">
+                    <a href="/admin-tools" class="nav-link">Admin Tools</a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a href="/chat-page" class="nav-link">Chat Room</a>
                 </li>

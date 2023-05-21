@@ -39,6 +39,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash("Logged out successfully!")
     return redirect(url_for("routes.home"))
 
 @routes.route('/signup', methods=['GET', 'POST'])
@@ -47,11 +48,11 @@ def signup():
         username = request.form.get("uname")
         password = request.form.get("pwd")
         confirm_password = request.form.get("cpwd")
+        admin_confirmation = False
 
         user = User.query.filter_by(username=username).first()
         if user:
             flash("Username is taken!", category="error")
-        
         if len(username) < 3:
             flash("Username must be at least 3 characters long.", category="error")
         elif len(password) < 5:
@@ -59,9 +60,20 @@ def signup():
         elif password != confirm_password:
             flash("Passwords do not match.", category="error")
         else:
+            staff_name = request.form.get("staff_name")
+            staff_id = request.form.get("staff_id")
+            if len(staff_name) > 0 or len(staff_id) > 0:
+                csv = open("staff.csv", "r").readlines()
+                details = f"{staff_name},{staff_id}\n"
+                if details in csv:
+                    admin_confirmation = True
+                else:
+                    flash("Incorrect admin credentials entered.", category="error")
+                    return render_template('signup.html', user=current_user)
             salt = os.urandom(16)
             salt = b64encode(salt).decode()
-            new_user = User(username=username, password=generate_password_hash(password + salt, method="sha256"), salt=salt)
+            new_user = User(username=username, password=generate_password_hash(
+                password + salt, method="sha256"), salt=salt, is_admin=admin_confirmation)
             db.session.add(new_user)
             db.session.commit()
             flash("Account created successfully. Log in to continue!", category="success")
@@ -90,3 +102,19 @@ def knowledge_hub():
 def download(upload_id):
     upload = Resource.query.filter_by(id=upload_id).first()
     return send_file(BytesIO(upload.data), download_name= upload.filename, as_attachment=True)
+
+@routes.route('/admin-tools', methods=['GET', 'POST'])
+@login_required
+def admin_tools():
+    if request.method == "POST":
+        if request.form.get("uid"):
+            uid = request.form.get("uid")
+            User.query.filter(User.id == uid).delete()
+            db.session.commit()
+        elif request.form.get("rid"):
+            rid = request.form.get("rid")
+            Resource.query.filter(Resource.id == rid).delete()
+            db.session.commit()
+    all_resources = db.session.query(Resource).order_by(Resource.id).all()
+    all_users = db.session.query(User).order_by(User.id).all()
+    return render_template('admin_tools.html', user=current_user, resources=all_resources, users=all_users)
